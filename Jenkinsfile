@@ -11,7 +11,8 @@ pipeline {
 
     stage('Checkout Source') {
       steps {
-        git 'https://github.com/siddharthwalke/jenkins-k8s-deployment.git'
+        git credentialsId: 'GitHub-Sid', url: 'https://github.com/siddharthwalke/jenkins-k8s-deployment.git'
+  }
       }
     }
 
