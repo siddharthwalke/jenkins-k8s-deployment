@@ -48,11 +48,4 @@ pipeline {
       }
     }
   }
-
-  post {
-    always {
-      // Clean up by removing the built Docker image
-      dockerImage?.remove()
-    }
-  }
 }
