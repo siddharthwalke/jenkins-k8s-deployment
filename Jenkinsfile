@@ -16,7 +16,7 @@ pipeline {
     }
 
     stage('Build image') {
-      steps{
+      steps {
         script {
           dockerImage = docker.build dockerimagename
         }
@@ -25,12 +25,12 @@ pipeline {
 
     stage('Pushing Image') {
       environment {
-               registryCredential = 'docker-sid'
-           }
-      steps{
+        registryCredential = 'docker-sid'
+      }
+      steps {
         script {
-          docker.withRegistry( 'https://registry.hub.docker.com', registryCredential ) {
-            dockerImage.push("latest")
+          docker.withRegistry('https://registry.hub.docker.com', registryCredential) {
+            dockerImage.push('latest')
           }
         }
       }
@@ -39,11 +39,20 @@ pipeline {
     stage('Deploying React.js container to Kubernetes') {
       steps {
         script {
-          kubernetesDeploy(configs: "deployment.yaml", "service.yaml")
+          // Update the configuration file names
+          def deploymentConfigs = load "deployment.yaml"
+          def serviceConfigs = load "service.yaml"
+          
+          kubernetesDeploy(configs: deploymentConfigs + serviceConfigs)
         }
       }
     }
-
   }
 
+  post {
+    always {
+      // Clean up by removing the built Docker image
+      dockerImage?.remove()
+    }
+  }
 }
